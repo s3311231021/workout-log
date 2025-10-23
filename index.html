@@ -8,7 +8,7 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     th { background: #f2f2f2; }
-    input, select { padding: 4px; }
+    input, select, textarea { padding: 4px; }
     .btn { padding: 6px 12px; margin-top: 10px; cursor: pointer; }
   </style>
 </head>
@@ -30,9 +30,15 @@
     <label>時間(分鐘)：<input type="number" id="duration" min="1" required></label><br><br>
     <label>心率：<input type="number" id="heartRate" min="0"></label><br><br>
     <label>配速：<input type="text" id="pace" placeholder="7'20&quot;"></label><br><br>
-    <label>備註：<input type="text" id="note"></label><br><br>
-    <button type="submit" class="btn">新增紀錄</button><br><br>
+    <label>備註：<textarea id="note" rows="2"></textarea></label><br><br>
+
+    <button type="submit" class="btn">➕ 新增紀錄</button>
+    <!-- ✅ 新增匯出、匯入按鈕 -->
+    <button type="button" class="btn" onclick="exportJSON()">📤 匯出紀錄</button>
+    <button type="button" class="btn" onclick="importJSON()">📥 匯入紀錄</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
   </form>
+
   <table id="logTable">
     <thead>
       <tr>
@@ -57,7 +63,7 @@
           <td>${log.duration}</td>
           <td>${log.heartRate}</td>
           <td>${log.pace}</td>
-          <td>${log.note}</td>
+          <td style="white-space: pre-line;">${log.note}</td>
           <td><button onclick="deleteLog(${index})">🗑️</button></td>
         `;
         tbody.appendChild(tr);
@@ -92,7 +98,52 @@
       loadLogs();
     }
 
+    // ✅ 匯出紀錄成 JSON 檔案
+    function exportJSON() {
+      const logs = JSON.parse(localStorage.getItem('workoutLogs') || '[]');
+      if (logs.length === 0) {
+        alert("目前沒有任何紀錄可匯出！");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'workout-data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      alert("✅ 已匯出紀錄成 JSON 檔案（workout-data.json）");
+    }
+
+    // ✅ 匯入 JSON 檔案並更新 LocalStorage
+    function importJSON() {
+      document.getElementById('importFile').click();
+    }
+
+    document.getElementById('importFile').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        try {
+          const logs = JSON.parse(event.target.result);
+          if (Array.isArray(logs)) {
+            saveLogs(logs);
+            loadLogs();
+            alert("📥 匯入成功！資料已更新。");
+          } else {
+            alert("⚠️ 檔案格式錯誤，請確認是正確的 JSON。");
+          }
+        } catch (err) {
+          alert("⚠️ 匯入失敗，JSON 格式不正確。");
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = ""; // 重置檔案選擇器
+    });
+
     loadLogs();
   </script>
 </body>
 </html>
+

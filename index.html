@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>運動紀錄</title>
+  <style>
+    body { font-family: "Microsoft JhengHei"; max-width: 800px; margin: 40px auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #f2f2f2; }
+    input, select { padding: 4px; }
+    .btn { padding: 6px 12px; margin-top: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🏃 運動紀錄</h1>
+  <form id="logForm">
+    <label>日期：<input type="date" id="date" required></label>
+    <label>活動：
+      <select id="activity">
+        <option>健行</option>
+        <option>跑步</option>
+        <option>騎車</option>
+        <option>游泳</option>
+      </select>
+    </label>
+    <label>時間(分鐘)：<input type="number" id="duration" min="1" required></label>
+    <label>心率：<input type="number" id="heartRate" min="0"></label>
+    <label>配速：<input type="text" id="pace" placeholder="7'20&quot;"></label>
+    <label>備註：<input type="text" id="note"></label>
+    <button type="submit" class="btn">新增紀錄</button>
+  </form>
+
+  <table id="logTable">
+    <thead>
+      <tr>
+        <th>日期</th><th>活動</th><th>時間(分)</th><th>心率</th><th>配速</th><th>備註</th><th>刪除</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('logForm');
+    const tbody = document.querySelector('#logTable tbody');
+
+    function loadLogs() {
+      const logs = JSON.parse(localStorage.getItem('workoutLogs') || '[]');
+      tbody.innerHTML = '';
+      logs.forEach((log, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${log.date}</td>
+          <td>${log.activity}</td>
+          <td>${log.duration}</td>
+          <td>${log.heartRate}</td>
+          <td>${log.pace}</td>
+          <td>${log.note}</td>
+          <td><button onclick="deleteLog(${index})">🗑️</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveLogs(logs) {
+      localStorage.setItem('workoutLogs', JSON.stringify(logs));
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const log = {
+        date: document.getElementById('date').value,
+        activity: document.getElementById('activity').value,
+        duration: document.getElementById('duration').value,
+        heartRate: document.getElementById('heartRate').value,
+        pace: document.getElementById('pace').value,
+        note: document.getElementById('note').value
+      };
+      const logs = JSON.parse(localStorage.getItem('workoutLogs') || '[]');
+      logs.push(log);
+      saveLogs(logs);
+      loadLogs();
+      form.reset();
+    });
+
+    function deleteLog(index) {
+      const logs = JSON.parse(localStorage.getItem('workoutLogs') || '[]');
+      logs.splice(index, 1);
+      saveLogs(logs);
+      loadLogs();
+    }
+
+    loadLogs();
+  </script>
+</body>
+</html>

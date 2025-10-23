@@ -15,7 +15,7 @@
 <body>
   <h1>🏃 運動紀錄</h1>
   <form id="logForm">
-    <label>日期：<input type="date" id="date" required></label>
+    <label>日期：<input type="date" id="date" required></label><br>
     <label>活動：
       <select id="activity">
         <option>健行</option>
@@ -25,19 +25,18 @@
         <option>球類</option>
         <option>瑜伽</option>
         <option>其他</option>
-      </select>
+      </select><br>
     </label>
-    <label>時間(分鐘)：<input type="number" id="duration" min="1" required></label>
-    <label>心率：<input type="number" id="heartRate" min="0"></label>
-    <label>配速：<input type="text" id="pace" placeholder="7'20&quot;"></label>
-    <label>備註：<input type="text" id="note"></label>
-    <button type="submit" class="btn">新增紀錄</button>
+    <label>時間(分鐘)：<input type="number" id="duration" min="1" required></label><br>
+    <label>心率：<input type="number" id="heartRate" min="0"></label><br>
+    <label>配速：<input type="text" id="pace" placeholder="7'20&quot;"></label><br>
+    <label>備註：<input type="text" id="note"></label><br>
+    <button type="submit" class="btn">新增紀錄</button><br>
   </form>
-
   <table id="logTable">
     <thead>
       <tr>
-        <th>日期</th><br><th>活動</th><br><th>時間(分)</th><br><th>心率</th><br><th>配速</th><br><th>備註</th><br><th>刪除</th><br>
+        <th>日期</th><th>活動</th><th>時間(分)</th><th>心率</th><th>配速</th><th>備註</th><th>刪除</th>
       </tr>
     </thead>
     <tbody></tbody>
